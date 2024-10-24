@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link' 
 import { NavBar } from './components/nav'
+import { initializeApp } from 'firebase/app';
+import {config} from './config/config'
 
 export default function Landing() {
   return (
