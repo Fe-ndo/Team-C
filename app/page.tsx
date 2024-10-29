@@ -2,6 +2,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { NavBar } from "./components/nav";
+import Application from "./Application";
+import React from "react";
+import ReactDOM from "react-dom";
 
 export default function Landing() {
   return (

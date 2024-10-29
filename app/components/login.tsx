@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   AuthError,
 } from "firebase/auth";
-import { auth } from "../components/firebase";
+import { auth } from "../components/config/config";
 
 export function SignIn() {
   const [email, setEmail] = useState("");

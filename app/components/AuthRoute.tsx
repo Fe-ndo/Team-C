@@ -1,28 +1,30 @@
+// AuthRoute.tsx
 import React, { useEffect, useState, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { authConfig } from "../components/config/config"; // Import authConfig
 
-export interface IAuthRouteProps {
-  children: ReactNode; // The child components that need protection
-}
+type AuthRouteProps = {
+  children: ReactNode;
+};
 
-const AuthRoute: React.FC<IAuthRouteProps> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // Initially null (loading)
+const AuthRoute = ({ children }: AuthRouteProps) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const navigate = useNavigate();
-  const auth = getAuth();
+  const { auth, loginPath } = authConfig; // Use auth and loginPath from authConfig
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      console.log("User state changed:", user);
       if (user) {
         setIsAuthenticated(true); // User is authenticated
       } else {
         setIsAuthenticated(false); // User is not authenticated
-        navigate("/login"); // Redirect to login
+        navigate(loginPath); // Redirect to loginPath from config
       }
     });
 
     return () => unsubscribe(); // Cleanup listener on component unmount
-  }, [auth, navigate]);
+  }, [auth, navigate, loginPath]);
 
   if (isAuthenticated === null) {
     return <p>Loading...</p>; // Show loading indicator while checking authentication
