@@ -1,5 +1,37 @@
 import Link from "next/link"
 
+"use client";
+import Link from "next/link";
+import { useState } from "react";
+
+const DropdownMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="font-bold transition-all flex align-middle py-1 px-2 m-1">
+      <button onClick={() => setIsOpen(!isOpen)}>Tools</button>
+      <ul
+        className={`absolute mt-10 bg-slate-300 shadow-lg rounded-md w-48 bg-opacity-70 ${
+          isOpen ? "block" : "hidden"
+        }`}
+      >
+        <div className="">
+          {Object.entries(dropdownNavItems).map(([path, { name }]) => {
+            return (
+              <Link
+                key={path}
+                href={path}
+                className="font-bold transition-all flex align-middle py-1 px-2 m-1"
+              >
+                {name}
+              </Link>
+            );
+          })}
+        </div>
+      </ul>
+    </div>
+  );
+};
 
 const navItems = {
   "/": {
