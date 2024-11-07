@@ -1,37 +1,81 @@
 from flask import Flask, request, jsonify
+import flask
 from flask_cors import CORS
+import firebase_admin
+from firebase_admin import app_check, firestore, credentials
+import jwt
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS to allow requests from your React front-end
+CORS(app) 
 
-# Mock user data for demonstration purposes
-USERS = {"user": "pass"}
-TOKEN = "mock_token"  # In a real app, use JWTs or another secure token method
+cred = credentials.Certificate("api/firebase.json")
+firebase_app = firebase_admin.initialize_app(cred)
+db=firestore.client()
 
 # Login endpoint
-@app.route("/api/login", methods=["POST"])
-def login():
-    data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-    
-    # Check if credentials match mock data
-    if USERS.get(username) == password:
-        # Return a mock token on successful login
-        return jsonify({"status": "success", "message": "Login successful", "token": TOKEN}), 200
-    else:
-        return jsonify({"status": "fail", "message": "Invalid credentials"}), 401
+@app.before_request
+def verifyToken():
+    app_check = flask.request.headers.get("X-Firebase-AppCheck", default = "")
+    try:
+        app_check_claims = app_check.verify_token(app_check)
+    except (ValueError, jwt.exceptions.DecodeError):
+        flask.abort(401)
+    return
 
-# Protected profile endpoint
-@app.route("/api/profile", methods=["GET"])
+
+@app.route("api/balance", methods =["GET"])
+def balance():
+    collectionRef = db.collections('userProfile').document("MtaHYe1QBQWafWOzlZaZvdh0RoA2")
+    doc = collectionRef.get()
+    return doc
+@app.route("api/profile", methods = ["POST,GET,PUT,DELETE"])
 def profile():
-    auth_header = request.headers.get("Authorization")
+    if request.method == 'GET':
+        return
+    if request.method == 'POST':
+        return
+    if request.method == 'PUT':
+        return
+    if request.method == 'DELETE':
+        return
+    return
+
+# Date {
+#     excersize1 :{
+#         reps: int,
+#         weight:int,
+#         name: string
+#     }
+# }
+
+@app.route("api/calorie", methods=["POST,GET,PUT,DELETE"])
+def calorie():
+
+    return
+
+# @app.route("/api/login", methods=["POST"])
+# def login():
+#     data = request.get_json()
+#     username = data.get("username")
+#     password = data.get("password")
     
-    # Verify if the token in Authorization header is correct
-    if auth_header == f"Bearer {TOKEN}":
-        return jsonify({"status": "success", "profile": {"name": "John Doe", "age": 30}}), 200
-    else:
-        return jsonify({"status": "fail", "message": "Unauthorized"}), 401
+#     # Check if credentials match mock data
+#     if USERS.get(username) == password:
+#         # Return a mock token on successful login
+#         return jsonify({"status": "success", "message": "Login successful", "token": TOKEN}), 200
+#     else:
+#         return jsonify({"status": "fail", "message": "Invalid credentials"}), 401
+
+# # Protected profile endpoint
+# @app.route("/api/profile", methods=["GET"])
+# def profile():
+#     auth_header = request.headers.get("Authorization")
+    
+#     # Verify if the token in Authorization header is correct
+#     if auth_header == f"Bearer {TOKEN}":
+#         return jsonify({"status": "success", "profile": {"name": "John Doe", "age": 30}}), 200
+#     else:
+#         return jsonify({"status": "fail", "message": "Unauthorized"}), 401
 
 # Make the app compatible with Vercel by exposing app as a callable
 def handler(environ, start_response):

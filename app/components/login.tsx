@@ -5,7 +5,8 @@ import {
   signInWithEmailAndPassword,
   AuthError,
 } from "firebase/auth";
-import { auth } from "../components/config/config";
+import { auth, db } from "../components/firebase";
+import { initUserProfile } from "./initCollections";
 
 export function SignIn() {
   const [email, setEmail] = useState("");
@@ -46,7 +47,13 @@ export function SignIn() {
 
     try {
       if (isSignUp) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+        await initUserProfile(auth, user, db);
         setMessage("Account created successfully!");
       } else {
         await signInWithEmailAndPassword(auth, email, password);
