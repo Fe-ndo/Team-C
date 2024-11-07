@@ -58,7 +58,7 @@ const dropdownNavItems = {
 export function NavBar() {
   return (
     <div className="w-full relative z-20 py-6 flex items-center justify-between">
-      <h1 className="ml-4 font-bold items-start text-4xl">Fittrackr</h1>
+      <h1 className="ml-4 font-bold items-start text-4xl">Fitrackr</h1>
       <div className="absolute left-1/2 -translate-x-1/2">
         <div className="pl-4 pr-4 py-1 flex justify-center flex-row rounded-full bg-slate-300 bg-opacity-70">
           <Link
