@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { Balance } from "./currency";
 
 const DropdownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -78,7 +79,10 @@ export function NavBar() {
           </Link>
         </div>
       </div>
-      <div className="mr-4 font-bold">
+      <div className="flex items-center mr-4 font-bold">
+        <div className="pr-4 ">
+          <Balance />
+        </div>
         <button className="bg-slate-300 bg-opacity- rounded-md p-2 ">
           <Link href="/Login">Sign in</Link>
         </button>
