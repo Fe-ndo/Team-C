@@ -28,10 +28,12 @@
 .profile-stats {
     display: flex;
     justify-content: space-around;
+  
     margin-top: 20px;
     width: 100%;
     max-width: 400px;
 }
+
 
 .stat-circle {
     display: flex;
@@ -52,4 +54,96 @@
 .stat-circle p {
     margin: 5px 0 0;
     font-size: 18px;
+}
+.stat-input {
+    width: 60px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: inherit;
+}
+
+.activity-selector {
+    margin-top: 20px;
+    
+}
+
+.activity-icons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    background-color:rgba(255, 0.0, 0.0, 0.0);
+
+}
+
+.activity-icon {
+   background-color:rgba(255, 0.0, 0.0, 0.0);
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+    padding: 20px;
+    border-radius: 50%;
+    text-align: center;
+}
+.activity-dropdown {
+    background-color:#565151;
+    color: whtie;  /* Dark gray text */
+    padding: 5px 10px;  /* Reduced padding */
+    font-size: 14px;  /* Smaller font size */
+    border-radius: 5px;  /* Rounded corners */
+    border: 1px solid #ccc;  /* Border color */
+    width: 150px;  /* Set a fixed width for the dropdown */
+    max-width: 100%;  /* Ensures it doesn’t overflow its container */
+}
+
+
+.color-picker {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color:rgba(255, 0, 0, 0.0);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.color-picker label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+.save-button-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center; /* Center the button */
+    align-items: center;
+    flex-direction: column;
+}
+
+.save-button {
+   
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth color transition */
+    width: 150px;
+}
+
+.save-button:disabled {
+    background-color: #d3d3d3;
+    cursor: not-allowed;
+}
+
+.save-button.loading {
+    background-color: #f39c12; /* Orange when saving */
+}
+
+.save-success {
+    margin-top: 10px;
+    color: #28a745; /* Green success message */
+    font-size: 14px;
+    text-align: center;
 }
