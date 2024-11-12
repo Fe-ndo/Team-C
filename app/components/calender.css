@@ -1,23 +1,33 @@
 /* calendar.css */
 .react-calendar {
-  background-color: white; /* Change background if needed */
+  background-color: #1f2937; /* Dark slate background */
+  color: #f3f4f6; /* Light text for readability */
+  border-radius: 0.5rem; /* Rounded corners for a softer look */
 }
 
+/* Individual date tiles */
 .react-calendar__tile {
-  color: blue; /* Change date color */
+  background-color: #374151; /* Medium dark background for dates */
+  color: #d1d5db; /* Light gray text color */
+  border-radius: 0.25rem; /* Slight rounding for tiles */
+  transition: background-color 0.2s ease; /* Smooth transition */
 }
 
+/* Active date styling */
 .react-calendar__tile--active {
-  background: #4f46e5; /* Active date background color */
-  color: white; /* Active date text color */
+  background-color: #6366f1; /* Tailwind indigo-500 for active date */
+  color: #f9fafb; /* Near-white text on active date */
 }
 
+/* Hover on active date */
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:hover {
-  background: #4338ca; /* Hover background for active date */
-  color: white; /* Hover text color for active date */
+  background-color: #4f46e5; /* Slightly darker indigo for hover */
+  color: #f9fafb; /* Keep text light on hover */
 }
 
+/* Styling for today's date */
 .react-calendar__tile--now {
-  border: 2px solid #4f46e5; /* Border for today */
+  border: 2px solid #10b981; /* Tailwind emerald-500 for today's border */
+  color: #d1d5db; /* Same text color as other dates */
 }
