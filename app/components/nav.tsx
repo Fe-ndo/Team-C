@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Balance } from "./currency";
+import { auth } from "./firebase";
+import { Auth } from "firebase/auth";
 
 const DropdownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,6 +59,7 @@ const dropdownNavItems = {
 };
 
 export function NavBar() {
+  const user = auth.currentUser;
   return (
     <div className="w-full relative z-20 py-6 flex items-center justify-between">
       <h1 className="ml-4 font-bold items-start text-4xl">Fittrackr</h1>
@@ -80,9 +83,7 @@ export function NavBar() {
         </div>
       </div>
       <div className="flex items-center mr-4 font-bold">
-        <div className="pr-4 ">
-          <Balance />
-        </div>
+        <div className="pr-4 ">{user ? <Balance /> : null}</div>
         <button className="bg-slate-300 bg-opacity- rounded-md p-2 ">
           <Link href="/Login">Sign in</Link>
         </button>

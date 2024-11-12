@@ -15,12 +15,10 @@ export default function Landing() {
   });
 
   const handleUnlock = (featureName: string, cost: number) => {
-    const currentBalance =
-      typeof currency === "number" ? currency : currency?.balance ?? 0;
-    console.log("Current balance:", currentBalance);
-    if (currentBalance >= cost) {
-      const newBalance = currentBalance - cost;
-      updateBalance({ balance: newBalance });
+    console.log("Current balance:", currency);
+    if (currency >= cost) {
+      const newBalance = currency - cost;
+      updateBalance(newBalance);
       setUnlocked((prevUnlocked) => ({
         ...prevUnlocked,
         [featureName]: true,
@@ -28,7 +26,7 @@ export default function Landing() {
     } else {
       alert("Insufficient balance to unlock this feature!");
     }
-    console.log("Current balance:", currentBalance);
+    console.log("Current balance:", currency);
   };
 
   return (

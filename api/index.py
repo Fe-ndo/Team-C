@@ -25,29 +25,89 @@ db=firestore.client()
 
 @app.route("/api/balance", methods =["GET"])
 def balance():
-    collectionRef = db.collection('userProfile').document("MtaHYe1QBQWafWOzlZaZvdh0RoA2")
+    uid = request.args.get("uid")
+    if not uid:
+        return {"error":"uid is required"}
+    collectionRef = db.collection('userProfile').document(uid)
     doc = collectionRef.get()
-    dic = doc.to_dict()
-    return dic
+    if doc.exists:
+        currency = doc.to_dict()
+        print(currency)
+        return currency
 
 @app.route("/api/balance/update", methods=["POST"])
 def updateBalance():
-    new_balance = request.json.get("balance")
+    uid = request.args.get("uid")
+    if not uid:
+        return {"error":"uid is required"}
+    new_balance = request.json.get("currency")
     if new_balance is None:
         return {"error": "No balance provided"}, 400
 
-    collectionRef = db.collection('userProfile').document("MtaHYe1QBQWafWOzlZaZvdh0RoA2")
-    collectionRef.update({"balance": new_balance})
+    collectionRef = db.collection('userProfile').document(uid)
+    collectionRef.update({'currency': new_balance})
 
-    return {"success": True, "balance": new_balance}, 200
+    return {"success": True, "currency": new_balance}, 200
 
 
 @app.route("/api/calorie", methods = ["POST"])
 def calorie():
+    uid = request.args.get("uid")
+    if not uid:
+        return {"error":"uid is required"}
     calorie_entry = request.json
-    collectionRef=db.collection('userProfile').document("MtaHYe1QBQWafWOzlZaZvdh0RoA2")
-    collectionRef.update(calorie_entry)
-    return {"Success": True}, 200
+    collectionRef=db.collection('userProfile').document(uid)
+    try:
+        data = request.json
+        entries = data.get('entry', [])
+        formatted_date = data.get('formattedDate')
+
+        if not entries or not formatted_date:
+            return jsonify({"error": "Missing required fields"}), 400
+        
+        doc_ref = collectionRef.document(formatted_date)
+        doc = doc_ref.get()
+
+        existing_entries = []
+        total_calories = 0
+
+        if doc.exists:
+            current_data = doc.to_dict()
+            existing_entries = current_data.get('entries', [])
+            total_calories = sum(entry['calories'] for entry in existing_entries)
+
+        for entry in entries:
+            food = entry.get('food')
+            amount = entry.get('amount')
+            unit = entry.get('unit')
+            calories = entry.get('calories')
+
+            if not all([food, amount, unit, calories]):
+                return jsonify({"error": "Invalid entry format"}), 400
+
+            new_entry = {
+                "food": food,
+                "amount": amount,
+                "unit": unit,
+                "calories": calories
+            }
+            existing_entries.append(new_entry)
+            total_calories += calories
+
+        doc_ref.set({
+            "date": formatted_date,
+            "entries": existing_entries,
+            "totalCalories": total_calories
+        }, merge=True)
+
+        return jsonify({
+            "message": "Entries added successfully",
+            "entries": entries,
+            "totalCalories": total_calories
+        }), 200
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "An error occurred while adding the entries"}), 500
 
 @app.route("/api/profile", methods = ["POST,GET,PUT,DELETE"])
 def profile():
@@ -68,11 +128,6 @@ def profile():
 #         name: string
 #     }
 # }
-
-@app.route("/api/calorie", methods=["POST,GET,PUT,DELETE"])
-def calorie():
-    print("Hello World!")
-    return
 
 # @app.route("/api/login", methods=["POST"])
 # def login():
