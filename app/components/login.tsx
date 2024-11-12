@@ -6,6 +6,8 @@ import {
   AuthError,
 } from "firebase/auth";
 import { auth } from "../components/config/config";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export function SignIn() {
   const [email, setEmail] = useState("");
@@ -14,6 +16,8 @@ export function SignIn() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const getErrorMessage = (error: AuthError) => {
     switch (error.code) {
@@ -48,9 +52,19 @@ export function SignIn() {
       if (isSignUp) {
         await createUserWithEmailAndPassword(auth, email, password);
         setMessage("Account created successfully!");
+        router.push("/Profile");
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        // Retrieve the Firebase ID token and store it in a cookie
+        const token = await userCredential.user.getIdToken();
+        Cookies.set("authToken", token, { expires: 7 }); // Cookie expires in 7 days
         setMessage("Signed in successfully!");
+        router.push("/Profile");
       }
     } catch (err: any) {
       // Format Firebase error messages to be more user-friendly
@@ -69,12 +83,16 @@ export function SignIn() {
     setError("");
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword); // Toggle password visibility
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-[80vh] py-16">
+    <div className="flex items-center justify-center min-h-screen w-full">
       <div className="max-w-sm w-full p-8 rounded-lg bg-gray-800 border border-gray-700 shadow-lg">
         <form className="space-y-6" onSubmit={handleSubmit}>
           <h5 className="text-2xl font-medium text-center text-white">
-            {isSignUp ? "Create Account" : "Sign in to Fittrackr"}
+            {isSignUp ? "Create Account" : "Sign in to FitTrackr"}
           </h5>
 
           {error && (
@@ -107,14 +125,23 @@ export function SignIn() {
             <label className="block mb-2 text-sm font-medium text-gray-300">
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-              className="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+                className="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility} // Button to toggle visibility
+                className="absolute inset-y-0 right-0 px-3 text-gray-400 hover:text-gray-300 focus:outline-none"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           <button
