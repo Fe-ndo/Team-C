@@ -39,3 +39,6 @@ __pycache__
 
 #python venv
 FitTrackr/*
+
+#firebase database
+firebase.json
