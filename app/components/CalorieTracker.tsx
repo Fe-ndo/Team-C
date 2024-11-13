@@ -8,7 +8,7 @@ import {
   getFirestore,
 } from "firebase/firestore";
 
-import { app } from "./config/config";
+import app from "./configs/config";
 import "./caloriestracker.css";
 
 export const db = getFirestore(app);

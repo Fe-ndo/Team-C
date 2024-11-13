@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   AuthError,
 } from "firebase/auth";
-import { auth } from "../components/config/config";
+import { auth } from "./configs/config";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "../components/config/config";
+import { auth } from "./configs/config";
 import { onAuthStateChanged } from "firebase/auth";
 
 // Define the props type for AuthRoute

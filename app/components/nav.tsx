@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { auth } from "../components/config/config";
+import { auth } from "./configs/config";
 import { onAuthStateChanged } from "firebase/auth";
 import { SignOut } from "../components/signout";
 import AuthRoute from "./authRoute2";

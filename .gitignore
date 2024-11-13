@@ -39,6 +39,3 @@ __pycache__
 
 #python venv
 FitTrackr/*
-
-#firebase config
-/app/components/config/*
