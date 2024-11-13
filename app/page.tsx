@@ -2,8 +2,33 @@
 import Image from "next/image";
 import Link from "next/link";
 import { NavBar } from "./components/nav";
+import React, { useState } from "react";
+import { useCurrency } from "./components/currency";
 
 export default function Landing() {
+  const { currency, updateBalance } = useCurrency();
+  const [unlocked, setUnlocked] = useState<{ [key: string]: boolean }>({
+    feature1: false,
+    feature2: false,
+    feature3: false,
+    feature4: false,
+  });
+
+  const handleUnlock = (featureName: string, cost: number) => {
+    console.log("Current balance:", currency);
+    if (currency >= cost) {
+      const newBalance = currency - cost;
+      updateBalance(newBalance);
+      setUnlocked((prevUnlocked) => ({
+        ...prevUnlocked,
+        [featureName]: true,
+      }));
+    } else {
+      alert("Insufficient balance to unlock this feature!");
+    }
+    console.log("Current balance:", currency);
+  };
+
   return (
     <div className="">
       <NavBar></NavBar>
@@ -29,6 +54,11 @@ export default function Landing() {
                 key={index}
                 featureTitle={feature.featureTitle}
                 featureDesc={feature.featureDesc}
+                cost={feature.cost}
+                onUnlock={() =>
+                  handleUnlock(`feature${index + 1}`, feature.cost)
+                }
+                unlocked={unlocked[`feature${index + 1}`]}
               />
             );
           })}
@@ -41,32 +71,56 @@ export default function Landing() {
 interface CardProps {
   featureTitle: string;
   featureDesc: string;
+  cost: number;
+  onUnlock: () => void;
+  unlocked: boolean;
 }
 
-const listFeatures: CardProps[] = [
+const listFeatures = [
   {
     featureTitle: "Workout Tracker",
     featureDesc: "A comprehensive workout tracker that allows you to...",
+    cost: 300,
   },
   {
     featureTitle: "Calorie Tracker",
     featureDesc: "A tool to help you keep track of your calorie intake!",
+    cost: 300,
   },
   {
     featureTitle: "Workout Search",
     featureDesc:
       "We host a comprehensive database of workouts with all the info you need",
+    cost: 300,
   },
   {
     featureTitle: "Recommended Workouts",
     featureDesc: "We offer an AI personalized workout service",
+    cost: 300,
   },
 ];
-const FeatureCard: React.FC<CardProps> = ({ featureTitle, featureDesc }) => {
+const FeatureCard: React.FC<CardProps> = ({
+  featureTitle,
+  featureDesc,
+  cost,
+  onUnlock,
+  unlocked,
+}) => {
   return (
     <div className="bg-opacity-90 relative z-99 p-8 mx-4 max-w-sm rounded-lg bg-gray-800 border-gray-100 hover:bg-gray-700">
       <h1 className="mb-2 text-2xl font-bold text-white">{featureTitle}</h1>
       <p className="text-sm">{featureDesc}</p>
+      <p>Cost: {cost} coins</p>
+      {unlocked ? (
+        <p className="text-green-500">Unlocked!</p>
+      ) : (
+        <button
+          onClick={onUnlock}
+          className="mt-4 bg-indigo-500 text-white p-2 rounded-lg"
+        >
+          Unlock Feature
+        </button>
+      )}
     </div>
   );
 };

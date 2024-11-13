@@ -1,15 +1,14 @@
-'use client';
+"use client";
 import { NavBar } from "../components/nav";
-import {SignIn}  from "../components/login";
-
+import { SignIn } from "../components/login";
 
 export default function Login() {
-    return(
-        <div>
-            <NavBar/>
-            <div className="flex">
-                <SignIn />
-            </div>
-        </div>
-    )
+  return (
+    <div>
+      <NavBar />
+      <div className="">
+        <SignIn />
+      </div>
+    </div>
+  );
 }

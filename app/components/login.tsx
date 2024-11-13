@@ -8,6 +8,8 @@ import {
 import { auth } from "./configs/config";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { auth, db } from "../components/firebase";
+import { initUserProfile } from "./initCollections";
 
 export function SignIn() {
   const [email, setEmail] = useState("");
@@ -50,7 +52,13 @@ export function SignIn() {
 
     try {
       if (isSignUp) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+        await initUserProfile(auth, user, db);
         setMessage("Account created successfully!");
         router.push("/Profile");
       } else {

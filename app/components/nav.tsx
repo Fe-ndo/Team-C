@@ -1,5 +1,8 @@
 "use client";
 import Link from "next/link";
+import { useState } from "react";
+import { Balance } from "./currency";
+import { Auth } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { auth } from "./configs/config";
 import { onAuthStateChanged } from "firebase/auth";
@@ -70,6 +73,7 @@ export function NavBar() {
     return () => unsubscribe();
   }, []);
 
+  const user = auth.currentUser;
   return (
     <div className="w-full relative z-20 py-6 flex items-center justify-between">
       <h1 className="ml-4 font-bold items-start text-4xl">FitTrackr</h1>
@@ -94,11 +98,12 @@ export function NavBar() {
           </AuthRoute>
         </div>
       </div>
-      <div className="mr-4 font-bold">
+      <div className="flex items-center mr-4 font-bold">
         {isAuthenticated ? (
           <SignOut />
         ) : (
-          <button className="bg-slate-300 bg-opacity- rounded-md p-2 ">
+          <div className="pr-4 ">{user ? <Balance /> : null}</div>
+        <button className="bg-slate-300 bg-opacity- rounded-md p-2 ">
             <Link href="/Login">Sign in</Link>
           </button>
         )}
