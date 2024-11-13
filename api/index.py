@@ -54,7 +54,7 @@ def updateBalance():
 def calorie():
     uid = request.args.get("uid")
     if not uid:
-        return {"error":"uid is required"}
+        return {"error":"uid is required"},400
     calorie_entry = request.json
     collectionRef=db.collection('userProfile').document(uid)
     try:
@@ -108,6 +108,22 @@ def calorie():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "An error occurred while adding the entries"}), 500
+    
+@app.route("/api/calorie/fetch", methods=["GET"])
+def fetch_calories():
+    uid = request.args.get("uid")
+    formatted_date = request.args.get("formattedDate")
+
+    if not uid or not formatted_date:
+        return {"error": "uid and formattedDate are required"}, 400
+
+    doc_ref = db.collection("userProfile").document(uid).collection("calorie_entries").document(formatted_date)
+    doc = doc_ref.get()
+
+    if doc.exists:
+        return jsonify(doc.to_dict()), 200
+    else:
+        return jsonify({"entries": [], "totalCalories": 0}), 200
 
 @app.route("/api/profile", methods = ["POST,GET,PUT,DELETE"])
 def profile():

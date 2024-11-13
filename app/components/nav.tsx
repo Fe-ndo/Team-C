@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
 import { Balance } from "./currency";
 import { Auth } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -102,10 +101,12 @@ export function NavBar() {
         {isAuthenticated ? (
           <SignOut />
         ) : (
+          <>
           <div className="pr-4 ">{user ? <Balance /> : null}</div>
-        <button className="bg-slate-300 bg-opacity- rounded-md p-2 ">
+          <button className="bg-slate-300 bg-opacity- rounded-md p-2 ">
             <Link href="/Login">Sign in</Link>
           </button>
+          </>
         )}
       </div>
     </div>
