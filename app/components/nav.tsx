@@ -99,14 +99,17 @@ export function NavBar() {
       </div>
       <div className="flex items-center mr-4 font-bold">
         {isAuthenticated ? (
+            <>
           <SignOut />
+            <div className="pr-4 ">{user ? <Balance /> : null}</div>
+               </>
         ) : (
-          <>
-          <div className="pr-4 ">{user ? <Balance /> : null}</div>
+        
+        
           <button className="bg-slate-300 bg-opacity- rounded-md p-2 ">
             <Link href="/Login">Sign in</Link>
           </button>
-          </>
+       
         )}
       </div>
     </div>
