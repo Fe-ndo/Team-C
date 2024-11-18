@@ -1,12 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  doc,
-  setDoc,
-  getDoc,
-  arrayUnion,
-  getFirestore,
-} from "firebase/firestore";
+import axios from "axios";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -22,7 +17,7 @@ import {
 import app from "./configs/config";
 import "./caloriestracker.css";
 
-export const db = getFirestore(app);
+const API_BASE_URL = "http://localhost:5000"; // Flask API base URL
 
 //Define interface fo a single food entry
 interface FoodEntry {
@@ -47,14 +42,13 @@ ChartJS.register(CategoryScale,LinearScale,PointElement,LineElement,Title,Toolti
 
 
 const CalorieTracker: React.FC<CalorieTrackerProps> = ({ selectedDate }) => {
+  const [userId, setUserId] = useState<string | null>(null); // State to store userId
   const [food, setFood] = useState("");
   const [amount, setAmount] = useState<number>(0);
   const [unit, setUnit] = useState<string>("g");
   const [calories, setCalories] = useState<number>(0);
   const [dailyEntries, setDailyEntries] = useState<FoodEntry[]>([]);
   const [totalCalories, setTotalCalories] = useState(0);
-
-   
   const [view,setView] = useState<'weekly' | 'monthly'> ('weekly');//State to manage  the selected view: 'weekly' or 'monthly'
   const [chartData, setChartData]=useState<ChartDataPoint[]>([]);  //State to store chart data points
 
@@ -62,31 +56,46 @@ const CalorieTracker: React.FC<CalorieTrackerProps> = ({ selectedDate }) => {
   // Format selected date for Firestore document ID
   const formattedDate = selectedDate.toISOString().split("T")[0];
 
-  // Fetch data each time the selected date changes
+   // Fetch userId from Firebase Authentication
   useEffect(() => {
-    const fetchDailyData = async () => {
-      console.log(`Fetching data for date: ${formattedDate}`);
-      const docRef = doc(db, "calorie_entries", formattedDate);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        console.log("Data retrieved:", data);
-        setDailyEntries(data.entries || []);
-        setTotalCalories(data.totalCalories || 0);
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid); // Get the user's UID from Firebase
       } else {
-        console.log("No data found for this date.");
-        setDailyEntries([]); // Ensure it's an empty array if no data
-        setTotalCalories(0);
+        setUserId(null); // No user is logged in
+        console.error("No user is logged in.");
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup subscription on unmount
+  }, []);
+
+  // Fetch daily data from Flask API
+  useEffect(() => {
+    if (!userId) return; // Do nothing if userId is not available
+
+    const fetchDailyData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/calorie_entries/${userId}/${formattedDate}`
+        );
+        const { entries, totalCalories } = response.data;
+        setDailyEntries(entries || []);
+        setTotalCalories(totalCalories || 0);
+      } catch (error) {
+        console.error("Error fetching daily data:", error);
       }
     };
 
     fetchDailyData();
-  }, [formattedDate]);
+  }, [formattedDate, userId]);
 
 
 //Fetch chart data for weekly/monthly view
 const fetchChartData = async()=>{
+  if (!userId) return; // Do nothing if userId is not available
+
   const startDate = new Date(selectedDate);
   const endDate = new Date(selectedDate);
 
@@ -103,14 +112,12 @@ const fetchChartData = async()=>{
   dates.push(d.toISOString().split("T")[0]); // Push each date in YYYY-MM-DD format
   }
 
-  const data:ChartDataPoint[] = await Promise.all(
+  const data = await Promise.all(
     dates.map(async(date)=>{
-      const docRef = doc(db, "calorie_entries", date);
-      const docSnap = await getDoc(docRef);
-      return{
-        date,
-        totalCalories: docSnap.exists()? docSnap.data().totalCalories||0:0,
-      };
+      const response = await axios.get(`${API_BASE_URL}/calorie_entries/${userId}/${date}`);
+
+      const { totalCalories } = response.data;
+          return { date, totalCalories: totalCalories || 0 };
     })
   );
   setChartData(data);
@@ -171,18 +178,11 @@ const generateChartData = ()=>({
     const updatedTotalCalories = totalCalories + calories;
 
     try {
-      const docRef = doc(db, "calorie_entries", formattedDate);
-
-      // Add new entry and update total calories in Firestore
-      await setDoc(
-        docRef,
-        {
-          date: formattedDate,
-          entries: arrayUnion(newEntry),
-          totalCalories: updatedTotalCalories,
-        },
-        { merge: true }
-      );
+      await axios.post(`${API_BASE_URL}/calorie_entries/${userId}`, {
+        date: formattedDate,
+        entry: newEntry,
+        totalCalories: updatedTotalCalories,
+      });
 
       // Immediately update local state to include the new entry
       setDailyEntries((prevEntries) => [...prevEntries, newEntry]);

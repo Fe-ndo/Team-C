@@ -27,7 +27,7 @@ export const Currency = ({ children }: { children: React.ReactNode }) => {
       // const url = `${route}`;
       // const response = await fetch(`/api/balance?uid=${user.uid}`);
       const response = await fetch(
-        "/api/balance?uid=9Si3RsFOSCPqIom1Gjv3oykJ5j03"
+        "/api/balance?uid=GHg5eC4KXWaWyJs91mq66fm8lex2"
       );
       if (!response.ok) {
         throw new Error("Failed to fetch");
