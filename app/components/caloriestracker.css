@@ -133,3 +133,36 @@ option {
 #unitSelected {
   color: black;
 }
+
+/* Buttons for Weekly/Monthly View */
+/* Button container styling */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* Space between buttons */
+  margin-top: 20px;
+}
+
+/* Weekly/Monthly Button Styling */
+.view-button {
+  padding: 10px 15px;
+  background-color: #0077cc; /* Primary color */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none; /* Remove default borders */
+  border-radius: 5px; /* Rounded edges for aesthetics */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.view-button:hover {
+  background-color: #005fa3; /* Darker blue for hover effect */
+  transform: scale(1.05); /* Slight zoom effect */
+}
+
+.view-button:disabled {
+  background-color: #d3d3d3; /* Gray for disabled state */
+  color: #888888; /* Dim text for disabled state */
+  cursor: not-allowed; /* Prevent interaction */
+}

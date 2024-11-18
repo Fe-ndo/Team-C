@@ -7,12 +7,24 @@ import {
   arrayUnion,
   getFirestore,
 } from "firebase/firestore";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
 import app from "./configs/config";
 import "./caloriestracker.css";
 
 export const db = getFirestore(app);
 
+//Define interface fo a single food entry
 interface FoodEntry {
   food: string;
   amount: number;
@@ -20,9 +32,19 @@ interface FoodEntry {
   calories: number;
 }
 
+//Define interface for chart data point
+interface ChartDataPoint{
+  date:string;
+  totalCalories:number;
+}
+
+//Props interface for the component
 interface CalorieTrackerProps {
   selectedDate: Date;
 }
+
+ChartJS.register(CategoryScale,LinearScale,PointElement,LineElement,Title,Tooltip,Legend);
+
 
 const CalorieTracker: React.FC<CalorieTrackerProps> = ({ selectedDate }) => {
   const [food, setFood] = useState("");
@@ -31,6 +53,11 @@ const CalorieTracker: React.FC<CalorieTrackerProps> = ({ selectedDate }) => {
   const [calories, setCalories] = useState<number>(0);
   const [dailyEntries, setDailyEntries] = useState<FoodEntry[]>([]);
   const [totalCalories, setTotalCalories] = useState(0);
+
+   
+  const [view,setView] = useState<'weekly' | 'monthly'> ('weekly');//State to manage  the selected view: 'weekly' or 'monthly'
+  const [chartData, setChartData]=useState<ChartDataPoint[]>([]);  //State to store chart data points
+
 
   // Format selected date for Firestore document ID
   const formattedDate = selectedDate.toISOString().split("T")[0];
@@ -56,6 +83,84 @@ const CalorieTracker: React.FC<CalorieTrackerProps> = ({ selectedDate }) => {
 
     fetchDailyData();
   }, [formattedDate]);
+
+
+//Fetch chart data for weekly/monthly view
+const fetchChartData = async()=>{
+  const startDate = new Date(selectedDate);
+  const endDate = new Date(selectedDate);
+
+  if(view === 'weekly'){
+    startDate.setDate(selectedDate.getDate()-selectedDate.getDay());//Start of the week
+    endDate.setDate(startDate.getDate()+6);//End of the week
+  }else if (view === 'monthly'){
+    startDate.setDate(1);//Start of the month
+    endDate.setMonth(selectedDate.getMonth()+1,0); //End of the month
+  }
+
+  const dates = [];
+  for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate()+1)){
+  dates.push(d.toISOString().split("T")[0]); // Push each date in YYYY-MM-DD format
+  }
+
+  const data:ChartDataPoint[] = await Promise.all(
+    dates.map(async(date)=>{
+      const docRef = doc(db, "calorie_entries", date);
+      const docSnap = await getDoc(docRef);
+      return{
+        date,
+        totalCalories: docSnap.exists()? docSnap.data().totalCalories||0:0,
+      };
+    })
+  );
+  setChartData(data);
+}
+
+useEffect(()=>{fetchChartData();},[view,selectedDate]);
+
+//Generate chart data for Chart.js
+const generateChartData = ()=>({
+  labels:chartData.map((d)=>d.date),// X-axis labels (dates)
+  datasets:[
+    {
+      label:`Calorie Intake(${view})`,//Dataset label
+      data: chartData.map((d)=>d.totalCalories),// Y-axis values (total calories)
+      borderColor:"rgba(75,192,192,1)",// Line color
+      backgroundColor:"rgba(75,192,192,0.3)", // Background fill under the line
+      fill:true, //Enable filling under the line
+    }
+  ],
+   options: {
+    plugins: {
+      legend: {
+        labels: {
+          color: "white", // Legend text color
+        },
+      },
+      tooltip: {
+        bodyColor: "white", // Tooltip text color
+        titleColor: "white", // Tooltip title color
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: "white", // X-axis label color
+        },
+      },
+      y: {
+        ticks: {
+          color: "white", // Y-axis label color
+        },
+      },
+    },
+    title: {
+      display: true,
+      text: "Calorie Intake Over Time",
+      color: "white", // Chart title color
+    },
+  },
+})
 
   // Function to handle form submission and add a new food entry
   const handleAddEntry = async (e: React.FormEvent) => {
@@ -188,8 +293,33 @@ const CalorieTracker: React.FC<CalorieTrackerProps> = ({ selectedDate }) => {
             </tbody>
           </table>
         </div>
+
+     {/* Chart View Selector */}
+      <div className="button-container">
+          <button
+            className="view-button"
+            onClick={() => setView("weekly")}
+            disabled={view === "weekly"}
+          >
+            Weekly
+          </button>
+          <button
+            className="view-button"
+            onClick={() => setView("monthly")}
+            disabled={view === "monthly"}
+          >
+            Monthly
+          </button>
+      </div>
+
+        {/* Chart */}
+        <div>
+          <h2>{view.charAt(0).toUpperCase() + view.slice(1)} Calorie Intake</h2>
+          {chartData.length > 0 && <Line data={generateChartData()}  options={generateChartData().options} />}
+        </div>
       </div>
     </div>
+
   );
 };
 
