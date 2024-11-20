@@ -7,6 +7,8 @@ import {
 } from "firebase/auth";
 import { auth, db } from "../components/firebase";
 import { initUserProfile } from "./initCollections";
+import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function SignIn() {
   const [email, setEmail] = useState("");
@@ -15,6 +17,7 @@ export function SignIn() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const getErrorMessage = (error: AuthError) => {
     switch (error.code) {
@@ -55,9 +58,11 @@ export function SignIn() {
         const user = userCredential.user;
         await initUserProfile(auth, user, db);
         setMessage("Account created successfully!");
+        router.push("/Landing");
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         setMessage("Signed in successfully!");
+        router.push("/Landing");
       }
     } catch (err: any) {
       // Format Firebase error messages to be more user-friendly

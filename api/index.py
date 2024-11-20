@@ -2,7 +2,8 @@ from flask import Flask, request, jsonify
 import flask
 from flask_cors import CORS
 import firebase_admin
-from firebase_admin import app_check, firestore, credentials
+from google.cloud.firestore_v1.base_query import FieldFilter
+from firebase_admin import app_check, firestore, credentials 
 import jwt
 
 app = Flask(__name__)
@@ -49,7 +50,7 @@ def updateBalance():
 
     return {"success": True, "currency": new_balance}, 200
 
-
+## Route for calorie tracker
 @app.route("/api/calorie", methods = ["POST"])
 def calorie():
     uid = request.args.get("uid")
@@ -121,39 +122,47 @@ def profile():
         return
     return
 
-# Date {
-#     excersize1 :{
-#         reps: int,
-#         weight:int,
-#         name: string
-#     }
-# }
+# Route to get 
+@app.route("/api/search", methods=["GET"])
+def search():
+    try:
+        queryWord = request.args.get("query")
+        docs = db.collection("workouts").stream()
+        result = []
+        for doc in docs:
+            doc_data = doc.to_dict()
+            if queryWord in doc_data.get('name', '').lower():
+                result.append(doc_data)
 
-# @app.route("/api/login", methods=["POST"])
-# def login():
-#     data = request.get_json()
-#     username = data.get("username")
-#     password = data.get("password")
-    
-#     # Check if credentials match mock data
-#     if USERS.get(username) == password:
-#         # Return a mock token on successful login
-#         return jsonify({"status": "success", "message": "Login successful", "token": TOKEN}), 200
-#     else:
-#         return jsonify({"status": "fail", "message": "Invalid credentials"}), 401
+        return jsonify(result),200
+    except Exception as e:
+        return jsonify({"error":str(e)}), 500
 
-# # Protected profile endpoint
-# @app.route("/api/profile", methods=["GET"])
-# def profile():
-#     auth_header = request.headers.get("Authorization")
-    
-#     # Verify if the token in Authorization header is correct
-#     if auth_header == f"Bearer {TOKEN}":
-#         return jsonify({"status": "success", "profile": {"name": "John Doe", "age": 30}}), 200
-#     else:
-#         return jsonify({"status": "fail", "message": "Unauthorized"}), 401
 
-# Make the app compatible with Vercel by exposing app as a callable
+
+@app.route("/api/workouts", methods=["GET"])
+def getAll():
+    try:
+        # query = request.args.get("search")
+        docs = db.collection("workouts").stream()
+        result = []
+        for doc in docs:
+            docData = doc.to_dict()
+            result.append(docData)
+        return jsonify(result),200
+    except Exception as e:
+        return jsonify({"error":str(e)}), 500
+
+## Redirects on login page after login/signup to the landing page [DONE]
+# Keep auth state across all pages
+## Finish table, allow pagination and filtering
+# merge code together
+# protected routes 
+# save trackers and profile data into the database
+# launch on vercel/frontend and host api
+
+
+# Vercel compatability func
 def handler(environ, start_response):
     return app(environ, start_response)
 
