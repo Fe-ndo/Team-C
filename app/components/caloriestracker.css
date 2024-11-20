@@ -166,3 +166,17 @@ option {
   color: #888888; /* Dim text for disabled state */
   cursor: not-allowed; /* Prevent interaction */
 }
+
+.delete-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: darkred;
+}

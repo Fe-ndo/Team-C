@@ -13,6 +13,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { v4 as uuidv4 } from "uuid";
 
 import app from "./configs/config";
 import "./caloriestracker.css";
@@ -21,6 +22,7 @@ const API_BASE_URL = "http://localhost:5000"; // Flask API base URL
 
 //Define interface fo a single food entry
 interface FoodEntry {
+  id?: string; // Add `id` for uniquely identifying entries
   food: string;
   amount: number;
   unit: string;
@@ -28,9 +30,9 @@ interface FoodEntry {
 }
 
 //Define interface for chart data point
-interface ChartDataPoint{
-  date:string;
-  totalCalories:number;
+interface ChartDataPoint {
+  date: string;
+  totalCalories: number;
 }
 
 //Props interface for the component
@@ -38,8 +40,15 @@ interface CalorieTrackerProps {
   selectedDate: Date;
 }
 
-ChartJS.register(CategoryScale,LinearScale,PointElement,LineElement,Title,Tooltip,Legend);
-
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const CalorieTracker: React.FC<CalorieTrackerProps> = ({ selectedDate }) => {
   const [userId, setUserId] = useState<string | null>(null); // State to store userId
@@ -49,14 +58,13 @@ const CalorieTracker: React.FC<CalorieTrackerProps> = ({ selectedDate }) => {
   const [calories, setCalories] = useState<number>(0);
   const [dailyEntries, setDailyEntries] = useState<FoodEntry[]>([]);
   const [totalCalories, setTotalCalories] = useState(0);
-  const [view,setView] = useState<'weekly' | 'monthly'> ('weekly');//State to manage  the selected view: 'weekly' or 'monthly'
-  const [chartData, setChartData]=useState<ChartDataPoint[]>([]);  //State to store chart data points
-
+  const [view, setView] = useState<"weekly" | "monthly">("weekly"); //State to manage  the selected view: 'weekly' or 'monthly'
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]); //State to store chart data points
 
   // Format selected date for Firestore document ID
   const formattedDate = selectedDate.toISOString().split("T")[0];
 
-   // Fetch userId from Firebase Authentication
+  // Fetch userId from Firebase Authentication
   useEffect(() => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -91,90 +99,128 @@ const CalorieTracker: React.FC<CalorieTrackerProps> = ({ selectedDate }) => {
     fetchDailyData();
   }, [formattedDate, userId]);
 
+  // Function to delete a calorie entry
+  const deleteCalorieEntry = async (entryId: string | undefined) => {
+    if (!entryId || !userId) return;
 
-//Fetch chart data for weekly/monthly view
-const fetchChartData = async()=>{
-  if (!userId) return; // Do nothing if userId is not available
+    try {
+      const response = await axios.delete(
+        `${API_BASE_URL}/calorie_entries/${userId}/${formattedDate}/${entryId}`
+      );
 
-  const startDate = new Date(selectedDate);
-  const endDate = new Date(selectedDate);
+      if (response.data.success) {
+        // Remove the deleted entry from local state
+        const updatedEntries = dailyEntries.filter(
+          (entry) => entry.id !== entryId
+        );
+        setDailyEntries(updatedEntries);
 
-  if(view === 'weekly'){
-    startDate.setDate(selectedDate.getDate()-selectedDate.getDay());//Start of the week
-    endDate.setDate(startDate.getDate()+6);//End of the week
-  }else if (view === 'monthly'){
-    startDate.setDate(1);//Start of the month
-    endDate.setMonth(selectedDate.getMonth()+1,0); //End of the month
-  }
+        // Update the total calories
+        const deletedEntry = dailyEntries.find((entry) => entry.id === entryId);
+        if (deletedEntry) {
+          setTotalCalories(totalCalories - deletedEntry.calories);
+        }
 
-  const dates = [];
-  for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate()+1)){
-  dates.push(d.toISOString().split("T")[0]); // Push each date in YYYY-MM-DD format
-  }
-
-  const data = await Promise.all(
-    dates.map(async(date)=>{
-      const response = await axios.get(`${API_BASE_URL}/calorie_entries/${userId}/${date}`);
-
-      const { totalCalories } = response.data;
-          return { date, totalCalories: totalCalories || 0 };
-    })
-  );
-  setChartData(data);
-}
-
-useEffect(()=>{fetchChartData();},[view,selectedDate]);
-
-//Generate chart data for Chart.js
-const generateChartData = ()=>({
-  labels:chartData.map((d)=>d.date),// X-axis labels (dates)
-  datasets:[
-    {
-      label:`Calorie Intake(${view})`,//Dataset label
-      data: chartData.map((d)=>d.totalCalories),// Y-axis values (total calories)
-      borderColor:"rgba(75,192,192,1)",// Line color
-      backgroundColor:"rgba(75,192,192,0.3)", // Background fill under the line
-      fill:true, //Enable filling under the line
+        console.log("Entry deleted successfully");
+      } else {
+        console.error("Error deleting entry:", response.data.error);
+      }
+    } catch (error) {
+      console.error("Error deleting entry:", error);
     }
-  ],
-   options: {
-    plugins: {
-      legend: {
-        labels: {
-          color: "white", // Legend text color
+  };
+
+  //Fetch chart data for weekly/monthly view
+  const fetchChartData = async () => {
+    if (!userId) return; // Do nothing if userId is not available
+
+    const startDate = new Date(selectedDate);
+    const endDate = new Date(selectedDate);
+
+    if (view === "weekly") {
+      startDate.setDate(selectedDate.getDate() - selectedDate.getDay()); //Start of the week
+      endDate.setDate(startDate.getDate() + 6); //End of the week
+    } else if (view === "monthly") {
+      startDate.setDate(1); //Start of the month
+      endDate.setMonth(selectedDate.getMonth() + 1, 0); //End of the month
+    }
+
+    const dates = [];
+    for (
+      let d = new Date(startDate);
+      d <= endDate;
+      d.setDate(d.getDate() + 1)
+    ) {
+      dates.push(d.toISOString().split("T")[0]); // Push each date in YYYY-MM-DD format
+    }
+
+    const data = await Promise.all(
+      dates.map(async (date) => {
+        const response = await axios.get(
+          `${API_BASE_URL}/calorie_entries/${userId}/${date}`
+        );
+
+        const { totalCalories } = response.data;
+        return { date, totalCalories: totalCalories || 0 };
+      })
+    );
+    setChartData(data);
+  };
+
+  useEffect(() => {
+    fetchChartData();
+  }, [view, selectedDate]);
+
+  //Generate chart data for Chart.js
+  const generateChartData = () => ({
+    labels: chartData.map((d) => d.date), // X-axis labels (dates)
+    datasets: [
+      {
+        label: `Calorie Intake(${view})`, //Dataset label
+        data: chartData.map((d) => d.totalCalories), // Y-axis values (total calories)
+        borderColor: "rgba(75,192,192,1)", // Line color
+        backgroundColor: "rgba(75,192,192,0.3)", // Background fill under the line
+        fill: true, //Enable filling under the line
+      },
+    ],
+    options: {
+      plugins: {
+        legend: {
+          labels: {
+            color: "white", // Legend text color
+          },
+        },
+        tooltip: {
+          bodyColor: "white", // Tooltip text color
+          titleColor: "white", // Tooltip title color
         },
       },
-      tooltip: {
-        bodyColor: "white", // Tooltip text color
-        titleColor: "white", // Tooltip title color
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          color: "white", // X-axis label color
+      scales: {
+        x: {
+          ticks: {
+            color: "white", // X-axis label color
+          },
+        },
+        y: {
+          ticks: {
+            color: "white", // Y-axis label color
+          },
         },
       },
-      y: {
-        ticks: {
-          color: "white", // Y-axis label color
-        },
+      title: {
+        display: true,
+        text: "Calorie Intake Over Time",
+        color: "white", // Chart title color
       },
     },
-    title: {
-      display: true,
-      text: "Calorie Intake Over Time",
-      color: "white", // Chart title color
-    },
-  },
-})
+  });
 
   // Function to handle form submission and add a new food entry
   const handleAddEntry = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!food || calories <= 0) return;
 
-    const newEntry: FoodEntry = { food, amount, unit, calories };
+    const newEntry: FoodEntry = { id: uuidv4(), food, amount, unit, calories };
     const updatedTotalCalories = totalCalories + calories;
 
     try {
@@ -281,6 +327,14 @@ const generateChartData = ()=>({
                     <td>{entry.amount}</td>
                     <td>{entry.unit}</td>
                     <td>{entry.calories} kcal</td>
+                    <td>
+                      <button
+                        onClick={() => deleteCalorieEntry(entry.id)}
+                        className="delete-button"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -294,8 +348,8 @@ const generateChartData = ()=>({
           </table>
         </div>
 
-     {/* Chart View Selector */}
-      <div className="button-container">
+        {/* Chart View Selector */}
+        <div className="button-container">
           <button
             className="view-button"
             onClick={() => setView("weekly")}
@@ -310,16 +364,20 @@ const generateChartData = ()=>({
           >
             Monthly
           </button>
-      </div>
+        </div>
 
         {/* Chart */}
         <div>
           <h2>{view.charAt(0).toUpperCase() + view.slice(1)} Calorie Intake</h2>
-          {chartData.length > 0 && <Line data={generateChartData()}  options={generateChartData().options} />}
+          {chartData.length > 0 && (
+            <Line
+              data={generateChartData()}
+              options={generateChartData().options}
+            />
+          )}
         </div>
       </div>
     </div>
-
   );
 };
 
