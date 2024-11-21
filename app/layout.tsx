@@ -17,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Currency>{children}</Currency>
+        <div className="background-container">
+          <Currency>{children}</Currency>
+        </div>
       </body>
     </html>
   );

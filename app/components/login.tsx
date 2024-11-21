@@ -65,7 +65,6 @@ export function SignIn() {
         router.push("/Landing");
       }
     } catch (err: any) {
-      // Format Firebase error messages to be more user-friendly
       const errorMessage = err.message;
       console.error("Auth error:", err);
       setError(errorMessage);

@@ -22,13 +22,13 @@ export const Currency = ({ children }: { children: React.ReactNode }) => {
   const getCurrBal = async () => {
     console.log("trying!");
     try {
-      // const route = "/api/balance";
-      // const params = new URLSearchParams({ uid: user.uid });
-      // const url = `${route}`;
-      // const response = await fetch(`/api/balance?uid=${user.uid}`);
-      const response = await fetch(
-        "/api/balance?uid=9Si3RsFOSCPqIom1Gjv3oykJ5j03"
-      );
+      const route = "/api/balance";
+      const params = new URLSearchParams({ uid: user.uid });
+      const url = `${route}`;
+      const response = await fetch(`/api/balance?uid=${user.uid}`);
+      // const response = await fetch(
+      //   "/api/balance?uid=9Si3RsFOSCPqIom1Gjv3oykJ5j03"
+      // );
       if (!response.ok) {
         throw new Error("Failed to fetch");
       }
@@ -60,7 +60,7 @@ export const Currency = ({ children }: { children: React.ReactNode }) => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        getCurrBal(); // This will now be called when user is set
+        getCurrBal();
       } else {
         setUser(null);
       }
@@ -68,6 +68,11 @@ export const Currency = ({ children }: { children: React.ReactNode }) => {
 
     return () => unsub();
   }, []);
+  useEffect(() => {
+    if (user) {
+      getCurrBal();
+    }
+  }, [user]);
 
   return (
     <CurrencyContext.Provider value={{ currency, setCurrency, updateBalance }}>
@@ -81,17 +86,9 @@ export const useCurrency = () => {
 
 export const Balance = () => {
   const currency = useCurrency();
-  const temp = currency.currency;
   return (
     <div className="text-xs bg-slate-300 bg-opacity- rounded-md p-2">
-      <h4>Balance: {temp}</h4>
+      <h4>Balance: {currency.currency}</h4>
     </div>
   );
 };
-
-// export const handleSpend = (amount: number) => {
-//   const currency = useCurrency();
-//   const newCurrency = currency - amount;
-//   setCurrency(newCurrency); // Update local state
-//   updateBalance({ balance: newCurrency }); // Sync with backend
-// };

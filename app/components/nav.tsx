@@ -50,7 +50,7 @@ const dropdownNavItems = {
   WorkoutTrack: {
     name: "WorkoutTrack",
   },
-  Search: {
+  Landing: {
     name: "Search",
   },
   CalorieTrack: {

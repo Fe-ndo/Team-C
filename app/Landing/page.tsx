@@ -41,7 +41,7 @@ export default function Landing() {
   return (
     <>
       <NavBar />
-      <div>
+      <div className="pl-10 pr-10">
         {loading ? (
           <div>Loading...</div>
         ) : Data ? (
@@ -104,7 +104,7 @@ const DataTable: React.FC<DataTableProps> = ({ data }) => {
       ),
     },
     {
-      accessorKey: "muscleGroup",
+      accessorKey: "primaryMuscles",
       header: "Primary Muscles",
       cell: ({ row }: { row: Row<workout> }) => (
         <div className="capitalize">
@@ -152,7 +152,7 @@ const DataTable: React.FC<DataTableProps> = ({ data }) => {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 text-slate-300">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {table
           .getAllColumns()
@@ -162,7 +162,7 @@ const DataTable: React.FC<DataTableProps> = ({ data }) => {
               "category",
               "level",
               "equipment",
-              "muscleGroup",
+              "primaryMuscles",
               "mechanic",
             ].includes(column.id)
           )
@@ -178,7 +178,7 @@ const DataTable: React.FC<DataTableProps> = ({ data }) => {
           ))}
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-slate-950 bg-opacity-90">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

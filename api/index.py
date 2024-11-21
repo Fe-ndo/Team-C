@@ -33,7 +33,6 @@ def balance():
     doc = collectionRef.get()
     if doc.exists:
         currency = doc.to_dict()
-        print(currency)
         return currency
 
 @app.route("/api/balance/update", methods=["POST"])
@@ -144,7 +143,7 @@ def search():
 def getAll():
     try:
         # query = request.args.get("search")
-        docs = db.collection("workouts").stream()
+        docs = db.collection("workouts").limit(50).stream()
         result = []
         for doc in docs:
             docData = doc.to_dict()
@@ -155,7 +154,7 @@ def getAll():
 
 ## Redirects on login page after login/signup to the landing page [DONE]
 # Keep auth state across all pages
-## Finish table, allow pagination and filtering
+## Finish table, allow pagination and filtering [done]
 # merge code together
 # protected routes 
 # save trackers and profile data into the database
