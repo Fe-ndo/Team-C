@@ -1,12 +1,10 @@
 // firebase.ts
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { config } from "../components/config/config";
-import { getFirestore } from "firebase/firestore";
-// Initialize Firebase
-const app = initializeApp(config);
-const auth = getAuth(app);
+// import { initializeApp } from "firebase/app";
+// import { getAuth } from "firebase/auth";
+// import { firebaseConfig } from "./configs/config";
 
-const db = getFirestore(app);
+// // Initialize Firebase
+// const app = initializeApp(firebaseConfig);
+// const auth = getAuth(app);
 
-export { auth, db };
+// export { auth };

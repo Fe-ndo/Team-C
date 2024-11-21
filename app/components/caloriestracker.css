@@ -1,0 +1,182 @@
+/* Main container styling */
+.calorie-tracker-container {
+  display: flex;
+  flex-direction: row; /* Change to row to align items side by side */
+  justify-content: center;
+  min-height: 100vh;
+  /*background-color: #f9fafb;  Light background for contrast */
+  padding: 20px;
+  gap: 20px; /* Add gap between sidebar and main content */
+}
+
+.sidebar {
+  width: 250px; /* Fixed width for sidebar */
+  background-color: #ffffff; /* Match calorie tracker content background */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.calorie-tracker-content {
+  max-width: 600px;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Form styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between form elements */
+  margin-top: 20px;
+}
+
+form label {
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Input styling */
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+  color: black;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border-color: #0077cc;
+  outline: none;
+}
+
+/* Button styling */
+#submitbtn {
+  padding: 10px 15px;
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: solid;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#submitbtn:hover {
+  background-color: #005fa3;
+}
+
+/* Table styling */
+.entries-table {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.entries-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.entries-table th,
+.entries-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+  font-size: 15px;
+}
+
+.entries-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.entries-table td {
+  background-color: #f9f9f9;
+}
+
+/* Table row hover effect */
+.entries-table tr:hover {
+  background-color: #f1f7ff;
+}
+
+/* Total calories styling */
+p {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  margin-top: 10px;
+}
+
+h1,
+h2 {
+  color: white;
+}
+
+option {
+  color: black;
+}
+
+#unitSelected {
+  color: black;
+}
+
+/* Buttons for Weekly/Monthly View */
+/* Button container styling */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* Space between buttons */
+  margin-top: 20px;
+}
+
+/* Weekly/Monthly Button Styling */
+.view-button {
+  padding: 10px 15px;
+  background-color: #0077cc; /* Primary color */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none; /* Remove default borders */
+  border-radius: 5px; /* Rounded edges for aesthetics */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.view-button:hover {
+  background-color: #005fa3; /* Darker blue for hover effect */
+  transform: scale(1.05); /* Slight zoom effect */
+}
+
+.view-button:disabled {
+  background-color: #d3d3d3; /* Gray for disabled state */
+  color: #888888; /* Dim text for disabled state */
+  cursor: not-allowed; /* Prevent interaction */
+}
+
+.delete-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: darkred;
+}
