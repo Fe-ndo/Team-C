@@ -41,8 +41,7 @@
     "shadcn": "^2.1.6",
     "tailwind-merge": "^2.5.4",
     "tailwindcss": "3.3.2",
-    "uuid": "^11.0.3",
-    "tailwindcss-animate": "^1.0.7"
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.2",
@@ -54,6 +53,7 @@
     "@types/react-router-dom": "^5.3.3",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.6.3"
   }
 }

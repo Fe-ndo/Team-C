@@ -14,7 +14,7 @@ import {
   Legend,
 } from "chart.js";
 import { v4 as uuidv4 } from "uuid";
-
+import CalorieReferenceTable from "./CalorieReferenceTable";
 import app from "./configs/config";
 import "./caloriestracker.css";
 
@@ -285,10 +285,15 @@ const CalorieTracker: React.FC<CalorieTrackerProps> = ({ selectedDate }) => {
               required
             >
               <option value="g">g</option>
-              <option value="serve">serve</option>
               <option value="cup">cup</option>
               <option value="oz">oz</option>
+              <option value="large">large</option>
+              <option value="medium">medium</option>
+              <option value="small">small</option>
+              <option value="serve">serve</option>
+              <option value="slice">slice</option>
               <option value="tablespoon">tablespoon</option>
+              <option value="ml">ml</option>
             </select>
           </label>
 

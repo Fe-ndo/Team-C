@@ -1,0 +1,56 @@
+.calorie-reference-table-container {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #ffffff; /* Lighter background */
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for better separation */
+  width: 80%; /* Limit the width for better layout */
+  margin-left: auto;
+  margin-right: auto; /* Center the table container */
+}
+
+.calorie-reference-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.calorie-reference-table th,
+.calorie-reference-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd; /* Light border */
+}
+
+.calorie-reference-table th {
+  background-color: #007bff; /* Blue background for headers */
+  color: #ffffff; /* White text for headers */
+  font-weight: 600; /* Bold header text */
+}
+
+.calorie-reference-table td {
+  background-color: #f9f9f9; /* Light background for rows */
+  font-size: 14px; /* Slightly smaller text */
+}
+
+.calorie-reference-table tr:hover {
+  background-color: #f1f1f1; /* Light hover effect */
+  cursor: pointer; /* Indicate interactivity */
+}
+
+.calorie-reference-table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Zebra stripes for readability */
+}
+
+.calorie-reference-table tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+#tablename {
+  color: #333333;
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 20px; /* Spacing above the table */
+}

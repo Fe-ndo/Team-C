@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CalorieTracker from "../components/CalorieTracker";
 import Sidebar2 from "../components/sidebar2";
 import { NavBar } from "../components/nav";
+import CalorieReferenceTable from "../components/CalorieReferenceTable";
 //import "./calorietracker.css";
 
 const Page: React.FC = () => {
@@ -14,6 +15,7 @@ const Page: React.FC = () => {
       <NavBar />
       <div className="calorie-tracker-container">
         <Sidebar2 onDateChange={setSelectedDate} />
+        <CalorieReferenceTable />
         <CalorieTracker selectedDate={selectedDate} />
       </div>
     </div>
