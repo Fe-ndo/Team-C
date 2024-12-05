@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { initUserProfile } from "./initCollections";
 import { redirect } from "next/navigation";
-import { useRouter } from "next/navigation";
 
 export function SignIn() {
   const [email, setEmail] = useState("");

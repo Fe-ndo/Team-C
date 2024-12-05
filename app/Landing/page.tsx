@@ -21,6 +21,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useEffect } from "react";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Landing() {
   const [Data, setData] = useState();
@@ -120,21 +121,24 @@ const DataTable: React.FC<DataTableProps> = ({ data }) => {
       ),
     },
     {
-      accessorKey: "instructions",
-      header: "Instructions",
-      cell: ({ row }: { row: Row<workout> }) => (
-        <div className="max-w-md">
-          <Button
-            variant="ghost"
-            className="h-8 w-full justify-start p-2 text-left text-sm"
-            onClick={() => {
-              console.log(row.original.instructions);
-            }}
+      accessorKey: "view",
+      header: "View Details",
+      cell: ({ row }: { row: Row<workout> }) => {
+        const workout = row.original;
+        const searchParams = new URLSearchParams({
+          data: JSON.stringify(workout),
+        });
+        return (
+          <Link
+            href={`/workouts/${workout.name
+              .toLowerCase()
+              .replace(/ /g, "-")}?${searchParams}`}
+            className="text-blue-500 hover:text-blue-700 hover:underline"
           >
-            View Instructions
-          </Button>
-        </div>
-      ),
+            View Workout
+          </Link>
+        );
+      },
     },
   ];
 

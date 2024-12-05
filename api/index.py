@@ -168,7 +168,7 @@ def add_calorie_entry(user_id):
 def delete_calorie_entry(user_id, date, entry_id):
     try:
         # Get the user's document
-        doc_ref = db.collection("userProfile").document(user_id)
+        doc_ref = db.collection("userProfile").document(user_id).collection("calorie_entries")
         doc = doc_ref.get()
 
         if not doc.exists:
@@ -236,7 +236,7 @@ def delete_calorie_entry(user_id, date, entry_id):
 
 @app.after_request
 def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://localhost:3000"
+    response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     return response

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000"; // Replace with your Flask API base URL
+const API_BASE_URL = "127.0.0.1:5328"; // Replace with your Flask API base URL
 
 // Capitalized the component name to follow React conventions
 export function UserProfile() {
